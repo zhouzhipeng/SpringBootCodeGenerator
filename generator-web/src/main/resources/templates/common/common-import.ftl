@@ -61,12 +61,12 @@
 </#macro>
 
 <#macro viewerCounter>
-var _hmt = _hmt || [];
-(function() {
-  //百度统计一下
-  var hm = document.createElement("script");
-  hm.src = "https://hm.baidu.com/hm.js?97fd5ca1a4298ac8349c7e0de9029a0f";
-  var s = document.getElementsByTagName("script")[0];
-  s.parentNode.insertBefore(hm, s);
-})();
+<#--var _hmt = _hmt || [];-->
+<#--(function() {-->
+<#--  //百度统计一下-->
+<#--  var hm = document.createElement("script");-->
+<#--  hm.src = "https://hm.baidu.com/hm.js?97fd5ca1a4298ac8349c7e0de9029a0f";-->
+<#--  var s = document.getElementsByTagName("script")[0];-->
+<#--  s.parentNode.insertBefore(hm, s);-->
+<#--})();-->
 </#macro>

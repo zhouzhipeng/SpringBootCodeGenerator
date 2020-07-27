@@ -16,11 +16,10 @@ public interface ${classInfo.className}Mapper {
     @Select("select * from ${classInfo.tableName} where ${classInfo.tableName}_id=井{id}")
     public ${classInfo.className} getById(Integer id);
 
-    @Options(useGeneratedKeys=true,keyProperty="${classInfo.className?uncap_first}Id")
-    @Insert("insert into ${classInfo.tableName}"
-            "(<#list classInfo.fieldList as fieldItem >${fieldItem.columnName}<#if fieldItem_has_next>,</#if></#list>)"
-            "values(<#list classInfo.fieldList as fieldItem >${fieldItem.fieldName}<#if fieldItem_has_next>,</#if>)</#list>")
-    public Integer insert(${classInfo.className} ${classInfo.className?uncap_first});
+    @Insert("insert into ${classInfo.tableName}" +
+            "(<#list classInfo.fieldList as fieldItem >${fieldItem.columnName}<#if fieldItem_has_next>,</#if></#list>)" +
+            "values (<#list classInfo.fieldList as fieldItem >井{${fieldItem.fieldName}}<#if fieldItem_has_next>,</#if></#list>)")
+    Integer insert(${classInfo.className} ${classInfo.className?uncap_first});
 
     @Delete(value = "delete from ${classInfo.tableName} where ${classInfo.tableName}_id=井{${classInfo.className?uncap_first}Id}")
     boolean delete(Integer id);
