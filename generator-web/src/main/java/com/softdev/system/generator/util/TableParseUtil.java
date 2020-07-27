@@ -157,8 +157,8 @@ public class TableParseUtil {
                         &&!columnLine.contains("pctincrease")
                         &&!columnLine.contains("buffer_pool")&&!columnLine.contains("tablespace")
                         &&!(columnLine.contains("primary ")&&i>3));
-                specialFlag=true;
-                if (specialFlag){
+                specialFlag=columnLine.startsWith("primary") || columnLine.startsWith("PRIMARY");
+                if (!specialFlag){
                     //如果是oracle的number(x,x)，可能出现最后分割残留的,x)，这里做排除处理
                     if(columnLine.length()<5) {continue;}
                     //2018-9-16 zhengkai 支持'符号以及空格的oracle语句// userid` int(11) NOT NULL AUTO_INCREMENT COMMENT '用户ID',

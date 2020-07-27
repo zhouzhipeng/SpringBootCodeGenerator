@@ -16,8 +16,8 @@ public interface ${classInfo.className}Mapper {
     @Select("select * from ${classInfo.tableName} where ${classInfo.tableName}_id=井{id}")
     public ${classInfo.className} getById(Integer id);
 
-    @Insert("insert into ${classInfo.tableName}" +
-            "(<#list classInfo.fieldList as fieldItem >${fieldItem.columnName}<#if fieldItem_has_next>,</#if></#list>)" +
+    @Insert("insert into ${classInfo.tableName} " +
+            "(<#list classInfo.fieldList as fieldItem >${fieldItem.columnName}<#if fieldItem_has_next>,</#if></#list>) " +
             "values (<#list classInfo.fieldList as fieldItem >井{${fieldItem.fieldName}}<#if fieldItem_has_next>,</#if></#list>)")
     Integer insert(${classInfo.className} ${classInfo.className?uncap_first});
 
