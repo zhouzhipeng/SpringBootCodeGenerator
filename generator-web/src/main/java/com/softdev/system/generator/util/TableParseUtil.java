@@ -58,12 +58,6 @@ public class TableParseUtil {
             tableName=tableName.replaceAll("if not exists","");
         }
 
-        if (tableName.contains("`")) {
-            tableName = tableName.substring(tableName.indexOf("`")+1, tableName.lastIndexOf("`"));
-        }else{
-            //空格开头的，需要替换掉\n\t空格
-            tableName=tableName.replaceAll(" ","").replaceAll("\n","").replaceAll("\t","");
-        }
         //优化对byeas`.`ct_bd_customerdiscount这种命名的支持
         if(tableName.contains("`.`")){
             tableName=tableName.substring(tableName.indexOf("`.`")+3);
@@ -71,6 +65,14 @@ public class TableParseUtil {
             //优化对likeu.members这种命名的支持
             tableName=tableName.substring(tableName.indexOf(".")+1);
         }
+        
+        if (tableName.contains("`")) {
+            tableName = tableName.substring(tableName.indexOf("`")+1, tableName.lastIndexOf("`"));
+        }else{
+            //空格开头的，需要替换掉\n\t空格
+            tableName=tableName.replaceAll(" ","").replaceAll("\n","").replaceAll("\t","");
+        }
+   
         // class Name
         String className = StringUtils.upperCaseFirst(StringUtils.underlineToCamelCase(tableName));
         if (className.contains("_")) {
@@ -155,6 +157,7 @@ public class TableParseUtil {
                         &&!columnLine.contains("pctincrease")
                         &&!columnLine.contains("buffer_pool")&&!columnLine.contains("tablespace")
                         &&!(columnLine.contains("primary ")&&i>3));
+                specialFlag=true;
                 if (specialFlag){
                     //如果是oracle的number(x,x)，可能出现最后分割残留的,x)，这里做排除处理
                     if(columnLine.length()<5) {continue;}
