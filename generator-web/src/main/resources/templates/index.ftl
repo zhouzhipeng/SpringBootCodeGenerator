@@ -88,11 +88,24 @@
                 success: function (data) {
                     if (data.code === 200) {
                         codeData = data.data;
-                        genCodeArea.setValue(codeData.beetlentity);
+                        genCodeArea.setValue(codeData.default);
                         genCodeArea.setSize('auto', 'auto');
                         $.toast("√ 代码生成成功");
                         //添加历史记录
                         addHistory(codeData);
+                        
+                        //渲染 resultButtons
+                        $("#resultButtons").html(codeData.resultButtons);
+                        /**
+                         * 按钮事件组
+                         */
+                        $('.generator').bind('click', function () {
+                            if (!$.isEmptyObject(codeData)) {
+                                genCodeArea.setValue(codeData[this.id]);
+                                genCodeArea.setSize('auto', 'auto');
+                            }
+                        });
+                        
                     } else {
                         $.toast("× 代码生成失败 :"+data.msg);
                     }
@@ -138,271 +151,109 @@
                 console.log("浏览器不支持sessionStorage");
             }
         }
-
-        /**
-         * 按钮事件组
-         */
-        $('.generator').bind('click', function () {
-            if (!$.isEmptyObject(codeData)) {
-                var id = this.id;
-                genCodeArea.setValue(codeData[id]);
-                genCodeArea.setSize('auto', 'auto');
-            }
-        });
-        /**
-         * 捐赠
-         */
-        function donate(){
-            if($("#donate").attr("show")=="no"){
-                $("#donate").html('<img src="https://raw.githubusercontent.com/moshowgame/SpringBootCodeGenerator/master/donate.png"></img>');
-                $("#donate").attr("show","yes");
-            }else{
-                $("#donate").html('<p>谢谢赞赏！</p>');
-                $("#donate").attr("show","no");
-            }
-        }
-        $('#donate1').on('click', function(){
-            donate();
-        });
-        $('#donate2').on('click', function(){
-            donate();
-        });
+        
         $('#btnCopy').on('click', function(){
-            if(!$.isEmptyObject(genCodeArea.getValue())&&!$.isEmptyObject(navigator)&&!$.isEmptyObject(navigator.clipboard)){
-                navigator.clipboard.writeText(genCodeArea.getValue());
-                $.toast("√ 复制成功");
-            }
+            $("#optionsBar").toggle();
         });
 
-        function getVersion(){
-            var gitVersion ;
-            $.ajax({
-                type: 'GET',
-                url: "https://raw.githubusercontent.com/moshowgame/SpringBootCodeGenerator/master/generator-web/src/main/resources/static/version.json",
-                dataType: "json",
-                success: function (data) {
-                    gitVersion = data.version;
-                    $.ajax({
-                        type: 'GET',
-                        url: base_url + "/static/version.json",
-                        dataType: "json",
-                        success: function (data) {
-                            $.toast("#当前版本:"+data.version+" | github:"+gitVersion);
-                        }
-                    });
-                }
-            });
-        }
-        $('#version').on('click', function(){
-            getVersion();
-        });
     });
 </script>
 </head>
 <body style="background-color: #e9ecef">
 
-<#--    <div class="container">-->
-<#--        <nav class="navbar navbar-dark bg-primary btn-lg">-->
-<#--            <a class="navbar-brand" href="http://www.bejson.com">BeJSON在线工具站</a>-->
-<#--            <ul class="nav navbar-nav">-->
-<#--                <li class="nav-item active">-->
-<#--                    <a class="nav-link" href="http://zhengkai.blog.csdn.net">zhengkai.blog.csdn.net</a>-->
-<#--                </li>-->
-<#--            </ul>-->
-<#--        </nav>-->
-<#--    </div>-->
 
 <!-- Main jumbotron for a primary marketing message or call to action -->
 <div class="jumbotron">
     <div class="container">
-        <h2>Spring Boot Code Generator!</h2>
-<#--        <p class="lead">-->
-<#--            √基于SpringBoot2+Freemarker的<a class="lead" href="https://github.com/moshowgame/SpringBootCodeGenerator">代码生成器</a><br>-->
-<#--            √以解放双手为目的，减少大量重复的CRUD工作<br>-->
-<#--            √支持mysql/oracle/pgsql三大数据库<br>-->
-<#--            √用DDL-SQL语句生成JPA/JdbcTemplate/Mybatis/MybatisPlus/BeetlSQL相关代码。<br>-->
-<#--            如果发现有SQL语句不能识别，请<a href="https://github.com/moshowgame/SpringBootCodeGenerator/issues">留言</a>，同时欢迎大家提<a href="https://github.com/moshowgame/SpringBootCodeGenerator/pulls">PR</a>和<a href="#" id="donate1">赞赏</a>，谢谢！<a id="version" href="#">查看版本</a>-->
-<#--        </p>-->
-        <div id="donate" class="container" show="no"></div>
+        <h2>Java Code Generator!</h2>
         <hr>
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-text">作者名称</span>
-            </div>
-            <input type="text" class="form-control" id="authorName" name="authorName" value="zhouzhipeng">
-            <div class="input-group-prepend">
-                <span class="input-group-text">返回封装</span>
-            </div>
-            <input type="text" class="form-control" id="returnUtil" name="returnUtil" value="ReturnT">
-            <div class="input-group-prepend">
-                <span class="input-group-text">包名路径</span>
-            </div>
-            <input type="text" class="form-control" id="packageName" name="packageName" value="com.zhouzhipeng">
-        </div>
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-text">数据类型</span>
-            </div>
-            <select type="text" class="form-control" id="dataType"
-                    name="dataType">
-                <option value="sql">ddl-sql</option>
-                <option value="json">json</option>
-                <option value="insert-sql">insert-sql</option>
-                <#--<option value="sql-regex">sql-regex</option>-->
-            </select>
-            <div class="input-group-prepend">
-                <span class="input-group-text">tinyint转换类型</span>
-            </div>
-            <select type="text" class="form-control" id="tinyintTransType"
-                    name="tinyintTransType">
-                <option value="boolean">boolean</option>
-                <option value="Boolean">Boolean</option>
-                <option value="Integer">Integer</option>
-                <option value="int">int</option>
-                <option value="String">String</option>
-            </select>
-            <div class="input-group-prepend">
-                <span class="input-group-text">命名转换规则</span>
-            </div>
-            <select type="text" class="form-control" id="nameCaseType"
-                    name="nameCaseType">
-                <option value="CamelCase">驼峰</option>
-                <option value="UnderScoreCase">下划线</option>
-                <#--<option value="UpperUnderScoreCase">大写下划线</option>-->
-            </select>
-            <div class="input-group-prepend">
-                <span class="input-group-text">swagger-ui</span>
-            </div>
-            <select type="text" class="form-control" id="isSwagger"
-                    name="isSwagger">
-                <option value="false">关闭</option>
-                <option value="true">开启</option>
-            </select>
-        </div>
+
         <textarea id="ddlSqlArea" placeholder="请输入表结构信息..." class="form-control btn-lg" style="height: 250px;">
-CREATE TABLE 'userinfo' (
+CREATE TABLE 'user_info' (
   'user_id' int(11) NOT NULL AUTO_INCREMENT COMMENT '用户ID',
   'user_name' varchar(255) NOT NULL COMMENT '用户名',
-  'addtime' datetime NOT NULL COMMENT '创建时间',
+  'add_time' datetime NOT NULL COMMENT '创建时间',
   PRIMARY KEY ('user_id')
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户信息'
         </textarea><br>
-        <p><button class="btn btn-primary btn-lg disabled" id="btnGenCode" role="button" data-toggle="popover" data-content="">开始生成 »</button> <button class="btn alert-secondary" id="btnCopy">一键复制</button></p>
+
+        
+        <p><button class="btn btn-primary btn-lg" id="btnGenCode" role="button" data-toggle="popover" data-content="">开始生成 »</button> 
+            <button class="btn alert-secondary" id="btnCopy">详细设置</button>
+        </p>
+       
+
+
+
+        <div id="optionsBar" style="display: none">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">作者名称</span>
+                </div>
+                <input type="text" class="form-control" id="authorName" name="authorName" value="zhouzhipeng">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">返回封装</span>
+                </div>
+                <input type="text" class="form-control" id="returnUtil" name="returnUtil" value="ReturnT">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">包名路径</span>
+                </div>
+                <input type="text" class="form-control" id="packageName" name="packageName" value="com.zhouzhipeng">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">数据类型</span>
+                </div>
+                <select type="text" class="form-control" id="dataType"
+                        name="dataType">
+                    <option value="sql">ddl-sql</option>
+                    <option value="json">json</option>
+                    <option value="insert-sql">insert-sql</option>
+                    <#--<option value="sql-regex">sql-regex</option>-->
+                </select>
+                <div class="input-group-prepend">
+                    <span class="input-group-text">tinyint转换类型</span>
+                </div>
+                <select type="text" class="form-control" id="tinyintTransType"
+                        name="tinyintTransType">
+                    <option value="boolean">boolean</option>
+                    <option value="Boolean">Boolean</option>
+                    <option value="Integer">Integer</option>
+                    <option value="int">int</option>
+                    <option value="String">String</option>
+                </select>
+                <div class="input-group-prepend">
+                    <span class="input-group-text">命名转换规则</span>
+                </div>
+                <select type="text" class="form-control" id="nameCaseType"
+                        name="nameCaseType">
+                    <option value="CamelCase">驼峰</option>
+                    <option value="UnderScoreCase">下划线</option>
+                    <#--<option value="UpperUnderScoreCase">大写下划线</option>-->
+                </select>
+                <div class="input-group-prepend">
+                    <span class="input-group-text">swagger-ui</span>
+                </div>
+                <select type="text" class="form-control" id="isSwagger"
+                        name="isSwagger">
+                    <option value="false">关闭</option>
+                    <option value="true">开启</option>
+                </select>
+            </div>
+
+            <hr>
+        </div>
+
+   
+
         <div id="history" class="btn-group" role="group" aria-label="Basic example"></div>
-        <hr>
-        <!-- Example row of columns -->
-        <div class="row" style="margin-top: 10px;">
-            <div class="btn-toolbar col-md-5" role="toolbar" aria-label="Toolbar with button groups">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="btn btn-secondary disabled setWidth" id="btnGroupAddon">通用实体</div>
-                    </div>
-                </div>
-                <div class="btn-group" role="group" aria-label="First group">
-                    <button type="button" class="btn btn-default generator" id="model">entity(set/get)</button>
-                    <button type="button" class="btn btn-default generator" id="beetlentity">entity(lombok)</button>
-                </div>
-            </div>
-            <div class="btn-toolbar col-md-7" role="toolbar" aria-label="Toolbar with button groups">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="btn btn-secondary disabled setWidth" id="btnGroupAddon">常用Util</div>
-                    </div>
-                </div>
-                <div class="btn-group" role="group" aria-label="First group">
-                    <button type="button" class="btn btn-default generator" id="beanutil">BeanUtil</button>
-                    <button type="button" class="btn btn-default generator" id="sql">SQL(CRUD)</button>
-                    <button type="button" class="btn btn-default generator" id="json">JSON</button>
-                    <button type="button" class="btn btn-default generator" id="xml">XML</button>
-                </div>
-            </div>
-        </div>
-        <!-- Example row of columns -->
-        <div class="row" style="margin-top: 10px;">
-            <div class="btn-toolbar col-md-5" role="toolbar" aria-label="Toolbar with button groups">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="btn btn-secondary disabled setWidth" id="btnGroupAddon">MybatisPlus</div>
-                    </div>
-                </div>
-                <div class="btn-group" role="group" aria-label="First group">
-                    <button type="button" class="btn btn-default generator" id="plusentity">entity</button>
-                    <button type="button" class="btn btn-default generator" id="plusmapper">mapper</button>
-                    <button type="button" class="btn btn-default generator" id="pluscontroller">controller</button>
-                </div>
-            </div>
 
-            <div class="btn-toolbar col-md-7" role="toolbar" aria-label="Toolbar with button groups">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="btn btn-secondary disabled setWidth" id="btnGroupAddon">UI</div>
-                    </div>
-                </div>
-                <div class="btn-group" role="group" aria-label="First group">
-                    <button type="button" class="btn btn-default generator" id="swagger-ui">swagger-ui</button>
-                    <button type="button" class="btn btn-default generator" id="element-ui">element-ui</button>
-                    <button type="button" class="btn btn-default generator" id="bootstrap-ui">bootstrap-ui</button>
-                    <button type="button" class="btn btn-default generator" id="layui-edit">layui-edit</button>
-                    <button type="button" class="btn btn-default generator" id="layui-list">layui-list</button>
-                </div>
-            </div>
-        </div>
 
-        <div class="row" style="margin-top: 10px;">
-            <div class="btn-toolbar col-md-5" role="toolbar" aria-label="Toolbar with button groups">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="btn btn-secondary disabled setWidth" id="btnGroupAddon">BeetlSQL</div>
-                    </div>
-                </div>
-                <div class="btn-group" role="group" aria-label="First group">
-                    <button type="button" class="btn btn-default generator" id="beetlmd">beetlmd</button>
-                    <button type="button" class="btn btn-default generator" id="beetlcontroller">beetlcontroller</button>
-                </div>
-            </div>
-            <div class="btn-toolbar col-md-5" role="toolbar" aria-label="Toolbar with button groups">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="btn btn-secondary disabled setWidth" id="btnGroupAddon">JPA</div>
-                    </div>
-                </div>
-                <div class="btn-group" role="group" aria-label="First group">
-                    <button type="button" class="btn btn-default generator" id="entity">jpa-entity</button>
-                    <button type="button" class="btn btn-default generator" id="repository">repository</button>
-                    <button type="button" class="btn btn-default generator" id="jpacontroller">controller</button>
-                </div>
-            </div>
-        </div>
-        <div class="row" style="margin-top: 10px;">
-            <div class="btn-toolbar col-md-5" role="toolbar" aria-label="Toolbar with button groups">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="btn btn-secondary disabled setWidth" id="btnGroupAddon">JdbcTemplate</div>
-                    </div>
-                </div>
-                <div class="btn-group" role="group" aria-label="First group">
-                    <button type="button" class="btn btn-default generator" id="jtdaoimpl">daoimpl</button>
-                    <button type="button" class="btn btn-default generator" id="jtdao">dao</button>
-                </div>
-            </div>
-            <div class="btn-toolbar col-md-7" role="toolbar" aria-label="Toolbar with button groups">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <div class="btn btn-secondary disabled setWidth" id="btnGroupAddon">Mybatis</div>
-                    </div>
-                </div>
-                <div class="btn-group" role="group" aria-label="First group">
-                    <button type="button" class="btn btn-default generator" id="mybatis">ibatisXml</button>
-                    <button type="button" class="btn btn-default generator" id="mapper">mapper</button>
-                    <button type="button" class="btn btn-default generator" id="mapper2">mapper2</button>
-                    <button type="button" class="btn btn-default generator" id="service">service</button>
-                    <button type="button" class="btn btn-default generator" id="service_impl">serviceImpl</button>
-                    <button type="button" class="btn btn-default generator" id="controller">controller</button>
-                </div>
-            </div>
-        </div>
-        <hr>
-        <textarea id="genCodeArea" class="form-control btn-lg" ></textarea>
+        <div id="resultButtons"></div>
+      
+        
+        <textarea id="genCodeArea"  class="form-control btn-lg" >点击上方 "开始生成" 按钮后在此查看结果！
+        </textarea>
     </div>
 </div>
 

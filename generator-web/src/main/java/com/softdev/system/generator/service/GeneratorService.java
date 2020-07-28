@@ -12,6 +12,7 @@ import java.util.Map;
  */
 public interface GeneratorService {
 
-    public Map<String,String> getResultByParams(Map<String, Object> params) throws IOException, TemplateException;
+    Map<String, String> renderBatchFTLs(String[] ftlFiles, Map<String, Object> params) throws IOException, TemplateException;
 
+    String renderFTL(String ftlPath, Map<String, Object> params) throws Exception;
 }

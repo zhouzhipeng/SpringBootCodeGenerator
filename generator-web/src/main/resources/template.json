@@ -160,5 +160,11 @@
     "name": "sql",
     "group": "util",
     "description": "sql"
+  },
+  {
+    "id": "74",
+    "name": "resultButtons",
+    "group": "html",
+    "description": "resultButtons"
   }
 ]
